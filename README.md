@@ -17,15 +17,39 @@ Seems pretty straightforward. Node will get me a basic server and I can do the o
 ### Todos
 
 - [x] Get a server running on `localhost` that listens on port `4000`. 
-- [ ] It should accept requests and parse urls for two commands: `get` and `set`, as well as an associated query.
-- [ ] Build parsing for each query
-  - [ ] `key=value` for `set` commands and
-  - [ ] `key=somekey` for `get` commands
-- [ ] Build a `Map()` or something to save the store the data
-- [ ] `set` will save the key/value pair to memory and 
-- [ ] `get` will return the value stored by the key.
+- [x] It should accept requests and parse urls for two commands: `get` and `set`, as well as an associated query.
+  - [x] EXTRA: I think it'll work for multiple queries per request on set but not for get
+- [x] Build parsing for each query
+  - [x] `key=value` for `set` commands and
+  - [x] `key=somekey` for `get` commands
+- [x] Build a `Map()` or something to save the store the data
+- [x] `set` will save the key/value pair to memory and 
+- [x] `get` will return the value stored by the key.
 
 ## Execution Notes
 
 - As I thought, `http` is what I was looking for and getting a server set up is easy-peasy. The docs are fairly intimidating though and I'm worried that if I don't set up the proper event responses it'll bug out. 
 - I wonder if this would be easier to do as class with methods...
+- Figuring out correct types is still a pain in the butt. I'm sure I don't have my IDE set up correctly
+- Not sure how I'll do error handling yet but yolo
+- How does one actually build in middleware
+- Node has everything. I think I've used the `url` lib once but its freaking awesome.
+- `searchParams` is what I need along with all its messages. 
+  - Interesting that it provides its own function to return an iterator
+  - why can't i just get an object back with kv pairs? I mean I guess it technically is an object but kinda annoying to have to iterate through it
+- Gotta be a better way to handle issues than this many `if it doesn't exist set the statuscode to bad and end it` statements
+- damn 2 hours for 100 lines? i'm ngmi
+
+Done with basics.
+
+## Improvements
+- [x] Add proper error listener
+- [ ] wrap request handling in try/catch
+- [ ] check http methods (get should be get and set should be post)
+- [ ] log http method with url
+- [ ] set http headers
+  - [ ] content-type
+  - [ ] others
+- [ ] Better error messages, possibly custom errors
+- [ ] remove explicit returns after `res.end()` where unneeded
+- [ ] more graceful shutdown
