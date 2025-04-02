@@ -1,0 +1,15 @@
+{
+  "name": "dbserver",
+  "version": "1.0.0",
+  "description": "DB Server pair programming task for Recurse Center.",
+  "license": "MIT",
+  "author": "Michael Monaghan",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.2"
+  }
+}
