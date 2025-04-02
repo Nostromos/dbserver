@@ -4,12 +4,13 @@
   "description": "DB Server pair programming task for Recurse Center.",
   "license": "MIT",
   "author": "Michael Monaghan",
-  "type": "commonjs",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "test": "test"
   },
   "devDependencies": {
+    "@types/node": "^22.13.17",
     "typescript": "^5.8.2"
   }
 }

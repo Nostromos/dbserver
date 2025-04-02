@@ -10,13 +10,13 @@ Before your interview, write a program that runs a server that is accessible on 
 During your interview, you will pair on saving the data to a file. You can start with simply appending each write to the file, and work on making it more efficient if you have time.
 ```
 
-## Thoughts
+## Preliminary Thoughts
 
 Seems pretty straightforward. Node will get me a basic server and I can do the other stuff fairly simply.
 
 ### Todos
 
-- [ ] Get a server running on `localhost` that listens on port `4000`. 
+- [x] Get a server running on `localhost` that listens on port `4000`. 
 - [ ] It should accept requests and parse urls for two commands: `get` and `set`, as well as an associated query.
 - [ ] Build parsing for each query
   - [ ] `key=value` for `set` commands and
@@ -25,6 +25,7 @@ Seems pretty straightforward. Node will get me a basic server and I can do the o
 - [ ] `set` will save the key/value pair to memory and 
 - [ ] `get` will return the value stored by the key.
 
-### Tests
+## Execution Notes
 
-`TODO`
+- As I thought, `http` is what I was looking for and getting a server set up is easy-peasy. The docs are fairly intimidating though and I'm worried that if I don't set up the proper event responses it'll bug out. 
+- I wonder if this would be easier to do as class with methods...
