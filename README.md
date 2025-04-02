@@ -44,12 +44,20 @@ Done with basics.
 
 ## Improvements
 - [x] Add proper error listener
-- [ ] wrap request handling in try/catch
+- [x] wrap request handling in try/catch
 - [ ] check http methods (get should be get and set should be post)
-- [ ] log http method with url
-- [ ] set http headers
-  - [ ] content-type
-  - [ ] others
+- [x] log http method with url
+- [x] set http headers
+  - [x] content-type
+  - [ ] content-length
+  - [ ] allow
+  - [ ] maybe cache-control?
 - [ ] Better error messages, possibly custom errors
-- [ ] remove explicit returns after `res.end()` where unneeded
+- [x] remove explicit returns after `res.end()` where unneeded
 - [ ] more graceful shutdown
+- [ ] Should log request timestamps to help with debug
+- [ ] Separate/better-organized routing logic
+
+## Completion
+
+Kinda smelly and could definitely be cleaned up, but didn't want to overdo it. There are a bunch of improvements I deliberately skipped because I don't think the goal of this is to build a super clean webserver where everything is perfect - rather the point is working through a problem with someone. 
