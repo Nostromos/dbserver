@@ -1,7 +1,6 @@
-import * as http from "http";
-import type { Server } from "http";
-
-const PORT = 4000;
+import { createServer } from "http";
+import type { Server, IncomingMessage, ServerResponse } from "http";
+import { URL } from "url";
 
 export default class babyServer {
   port: number;
@@ -15,42 +14,89 @@ export default class babyServer {
   }
 
   start = (): void => {
-    this.server = http.createServer();
+    this.server = createServer();
     this.listenForErrors();
     this.listenForRequests();
     this.server.listen(this.port);
-    console.log(`[babyServer] Server listening on port ${this.port}.`)
+    console.log(`[babyServer] Server listening on port ${this.port}.`);
   }
 
   stop = (): void => {
     this.server?.close();
     this.server?.closeAllConnections();
-    console.log(`[babyServer] Server on port ${this.port} closed successfully.`)
+    console.log(`[babyServer] Server on port ${this.port} closed successfully.`);
   }
 
   listenForRequests = (): void => {
-    console.log(`[babyServer] Listening for requests...`);
     this.server?.on('request', (req, res) => {
-      console.log(`[babyServer] Incoming Request:`)
-      console.log(req.headers)
-      console.log(req.url)
-      // parse requests
+      if (!req.url) {
+        res.statusCode = 400;
+        res.end("No URL in request");
+        return;
+      };
 
-      // call the right method
+      const parsedUrl = new URL(req.url, `http://localhost:${this.port}`);
 
-      // return a response
+      if (parsedUrl.pathname == "/get") {
+        this.handleGetRequest(parsedUrl, req, res);
+      } else if (parsedUrl.pathname == "/set") {
+        this.handleSetRequest(parsedUrl, req, res);
+      } else {
+        res.statusCode = 404;
+        res.end('No such method');
+        return;
+      }
+    });
+  }
+
+  handleSetRequest = (
+    url: URL,
+    req: IncomingMessage,
+    res: ServerResponse
+  ): void => {
+    console.log(`[babyServer] SET: ${url.searchParams}`);
+    url.searchParams.forEach((value, key) => {
+      this.memory.set(key, value);
     })
+
+    res.statusCode = 200;
+    res.end();
+    return;
   }
 
-  handleSetRequest = (): void => {
-    console.log(`[babyServer] SET Request received: /* ADD REQ PARAMS */`)
-  }
+  handleGetRequest = (
+    url: URL,
+    req: IncomingMessage,
+    res: ServerResponse
+  ): void => {
+    console.log(`[babyServer] GET: ${url.searchParams}`);
+    const key = url.searchParams.get('key');
 
-  handleGetRequest = (): void => {
-    console.log(`[babyServer] GET Request received: /* ADD REQ PARAMS */`)
+    if (!key) {
+      res.statusCode = 400;
+      res.end('cant get');
+      return;
+    }
+
+    const value = this.memory.get(key);
+
+    if (!value) {
+      res.statusCode = 404;
+      res.end('Key not found');
+      return;
+    }
+
+    res.statusCode = 200;
+    res.end(value);
+    return;
   }
 
   listenForErrors = (): void => {
-    console.log(`[babyServer] Listening for errors...`);
+    this.server?.on('error', (err) => {
+      console.error(err);
+      /**
+       * TODO: More detailed errors -> name, msg, stack, code & context (request info, etc.)
+       */
+    })
   }
 };
