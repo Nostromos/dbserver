@@ -37,14 +37,13 @@ export default class babyServer {
 
       const parsedUrl = new URL(req.url, `http://localhost:${this.port}`);
 
-      if (parsedUrl.pathname == "/get") {
+      if (parsedUrl.pathname == "/get") { // this should be done by checking that req.method is get
         this.handleGetRequest(parsedUrl, req, res);
-      } else if (parsedUrl.pathname == "/set") {
+      } else if (parsedUrl.pathname == "/set") { // this should be done by checking that req.method is set
         this.handleSetRequest(parsedUrl, req, res);
       } else {
-        res.statusCode = 404;
+        res.statusCode = 405;
         res.end('No such method');
-        return;
       }
     });
   }
@@ -54,14 +53,21 @@ export default class babyServer {
     req: IncomingMessage,
     res: ServerResponse
   ): void => {
-    console.log(`[babyServer] SET: ${url.searchParams}`);
-    url.searchParams.forEach((value, key) => {
-      this.memory.set(key, value);
-    })
+    try {
+      console.log(`[babyServer] SET: ${url.searchParams}`);
 
-    res.statusCode = 200;
-    res.end();
-    return;
+      url.searchParams.forEach((value, key) => {
+        this.memory.set(key, value);
+      })
+
+      res.statusCode = 200;
+      res.end("SET (POST) request successful"); // should really be a json.stringified { message: "..."}
+    } catch (err) {
+      console.error(err);
+
+      res.statusCode = 500;
+      res.end();
+    }
   }
 
   handleGetRequest = (
@@ -69,26 +75,33 @@ export default class babyServer {
     req: IncomingMessage,
     res: ServerResponse
   ): void => {
-    console.log(`[babyServer] GET: ${url.searchParams}`);
-    const key = url.searchParams.get('key');
+    try {
+      console.log(`[babyServer] GET: ${url.searchParams}`);
+      const key = url.searchParams.get('key');
 
-    if (!key) {
-      res.statusCode = 400;
-      res.end('cant get');
-      return;
+      if (!key) {
+        res.statusCode = 400;
+        res.end('Missing key in query params');
+        return;
+      }
+
+      const value = this.memory.get(key);
+
+      if (!value) {
+        res.statusCode = 404;
+        res.end('Key not found');
+        return;
+      }
+
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'text/plain');
+      res.end(value);
+    } catch (err) {
+      console.error(err);
+
+      res.statusCode = 500;
+      res.end();
     }
-
-    const value = this.memory.get(key);
-
-    if (!value) {
-      res.statusCode = 404;
-      res.end('Key not found');
-      return;
-    }
-
-    res.statusCode = 200;
-    res.end(value);
-    return;
   }
 
   listenForErrors = (): void => {

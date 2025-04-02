@@ -19,3 +19,4 @@ const sixth = await fetch("http://localhost:4000/get?key=3")
 const seventh = await fetch("http://localhost:4000/get?key=4");
 const eighth = await fetch("http://localhost:4000/get?key=5");
 
+bbs.stop();
