@@ -1,16 +1,19 @@
 import { createServer } from "http";
 import type { Server, IncomingMessage, ServerResponse } from "http";
 import { URL } from "url";
+import { writeFile as fsWriteFile, readFile as fsReadFile } from "fs/promises"
 
 export default class babyServer {
   port: number;
   memory: Map<string, string>;
   server: Server | null;
+  filePath: string;
 
   constructor(port = 4000) {
     this.port = port;
     this.memory = new Map();
     this.server = null;
+    this.filePath = './src/file.json';
   }
 
   start = (): void => {
@@ -48,20 +51,25 @@ export default class babyServer {
     });
   }
 
-  handleSetRequest = (
+  handleSetRequest = async (
     url: URL,
     req: IncomingMessage,
     res: ServerResponse
-  ): void => {
+  ): Promise<void> => {
     try {
       console.log(`[babyServer] SET: ${url.searchParams}`);
 
-      url.searchParams.forEach((value, key) => {
-        this.memory.set(key, value);
+      url.searchParams.forEach(async (value, key) => {
+        // this.memory.set(key, value);
+        await this.writeFile(this.filePath, value, key);
       })
+
+      const file = await this.readFile(this.filePath);
+      console.log(file);
 
       res.statusCode = 200;
       res.end("SET (POST) request successful"); // should really be a json.stringified { message: "..."}
+      
     } catch (err) {
       console.error(err);
 
@@ -70,11 +78,40 @@ export default class babyServer {
     }
   }
 
-  handleGetRequest = (
+  readFile = async (path = this.filePath) => {
+    try {
+      const fileContent = await fsReadFile(path, 'utf-8');
+
+      if (!fileContent.trim()) {
+        return {};
+      }
+
+      const data = JSON.parse(fileContent);
+      return data;
+    } catch (err) {
+      console.error(err);
+      return {};
+    }
+  }
+
+  writeFile = async (path = this.filePath, value: string, key: string) => {
+    try {
+      const data = await this.readFile(path);
+      data[key.toString()] = value.toString();
+
+      await fsWriteFile(path, JSON.stringify(data, null, 2), 'utf-8');
+      return data;
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  }
+
+  handleGetRequest = async (
     url: URL,
     req: IncomingMessage,
     res: ServerResponse
-  ): void => {
+  ): Promise<void> => {
     try {
       console.log(`[babyServer] GET: ${url.searchParams}`);
       const key = url.searchParams.get('key');
@@ -85,7 +122,13 @@ export default class babyServer {
         return;
       }
 
-      const value = this.memory.get(key);
+      const file = await this.readFile(this.filePath);
+
+      if (!file) {
+        res.statusCode = 400;
+        res.end();
+      }
+      const value = file[key.toString()];
 
       if (!value) {
         res.statusCode = 404;

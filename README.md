@@ -60,3 +60,11 @@ Done with basics.
 ## Completion
 
 Kinda smelly and could definitely be cleaned up, but didn't want to overdo it. There are a bunch of improvements I deliberately skipped because I don't think the goal of this is to build a super clean webserver where everything is perfect - rather the point is working through a problem with someone. 
+
+## Interview
+
+node:fs, readFile, writeFile, readFileSync, writeFileSync
+
+json
+
+JSON.stringify, JSON.parse
